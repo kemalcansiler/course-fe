@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -6,8 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { RouterLink } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
+import { RegisterRequest } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -19,6 +23,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
     MatCardModule,
     MatDividerModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
     RouterLink,
     ReactiveFormsModule,
   ],
@@ -69,8 +75,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
                 color="primary"
                 type="submit"
                 style="width: 100%; margin-top: 8px;"
-                [disabled]="!registerForm.valid"
+                [disabled]="!registerForm.valid || authService.isLoading()"
               >
+                @if (authService.isLoading()) {
+                  <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
+                }
                 Continue
               </button>
             </form>
@@ -122,6 +131,9 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 })
 export class Register {
   registerForm: FormGroup;
+  authService = inject(AuthService);
+  router = inject(Router);
+  snackBar = inject(MatSnackBar);
 
   constructor(private fb: FormBuilder) {
     this.registerForm = this.fb.group({
@@ -131,10 +143,32 @@ export class Register {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.registerForm.valid) {
-      console.log('Register form submitted:', this.registerForm.value);
-      // Handle registration logic here
+      try {
+        const registerRequest: RegisterRequest = {
+          fullName: this.registerForm.value.fullName,
+          email: this.registerForm.value.email,
+        };
+
+        await this.authService.register(registerRequest);
+
+        this.snackBar.open('Registration successful!', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+
+        // Redirect to dashboard
+        this.router.navigate(['/']);
+      } catch (error) {
+        this.snackBar.open('Registration failed. Please try again.', 'Close', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+        console.error('Registration error:', error);
+      }
     }
   }
 }

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -6,8 +6,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { RouterLink } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../../core/services/auth.service';
+import { LoginRequest } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +23,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
     MatCardModule,
     MatDividerModule,
     MatToolbarModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
     RouterLink,
     ReactiveFormsModule,
   ],
@@ -58,8 +64,11 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
                 color="primary"
                 type="submit"
                 style="width: 100%; margin-top: 8px;"
-                [disabled]="!loginForm.valid"
+                [disabled]="!loginForm.valid || authService.isLoading()"
               >
+                @if (authService.isLoading()) {
+                  <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
+                }
                 Continue
               </button>
             </form>
@@ -104,6 +113,9 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 })
 export class Login {
   loginForm: FormGroup;
+  authService = inject(AuthService);
+  router = inject(Router);
+  snackBar = inject(MatSnackBar);
 
   constructor(private fb: FormBuilder) {
     this.loginForm = this.fb.group({
@@ -111,10 +123,32 @@ export class Login {
     });
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.loginForm.valid) {
-      console.log('Login form submitted:', this.loginForm.value);
-      // Handle login logic here
+      try {
+        const loginRequest: LoginRequest = {
+          email: this.loginForm.value.email,
+        };
+
+        await this.authService.login(loginRequest);
+
+        this.snackBar.open('Login successful!', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+
+        // Redirect to dashboard or return URL
+        const returnUrl = this.router.parseUrl(this.router.url).queryParams['returnUrl'] || '/';
+        this.router.navigate([returnUrl]);
+      } catch (error) {
+        this.snackBar.open('Login failed. Please try again.', 'Close', {
+          duration: 5000,
+          horizontalPosition: 'center',
+          verticalPosition: 'top',
+        });
+        console.error('Login error:', error);
+      }
     }
   }
 }

@@ -551,72 +551,72 @@
     }
   }
 
-    .purchase-section {
-      .price-display {
-        margin-bottom: 20px;
-        text-align: center;
+  .purchase-section {
+    .price-display {
+      margin-bottom: 20px;
+      text-align: center;
 
-        .current-price {
-          font-size: 36px;
-          font-weight: 700;
-          color: #1c1d1f;
-        }
+      .current-price {
+        font-size: 36px;
+        font-weight: 700;
+        color: #1c1d1f;
       }
+    }
 
-      .purchase-buttons {
-        margin-bottom: 24px;
+    .purchase-buttons {
+      margin-bottom: 24px;
 
-        .enroll-button {
-          width: 100%;
-          height: 48px;
+      .enroll-button {
+        width: 100%;
+        height: 48px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+    }
+
+    .course-info {
+      margin-bottom: 24px;
+      padding: 16px;
+      background: #f8f9fa;
+      border-radius: 8px;
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #1c1d1f;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        mat-icon {
           font-size: 16px;
-          font-weight: 600;
-        }
-      }
-
-      .course-info {
-        margin-bottom: 24px;
-        padding: 16px;
-        background: #f8f9fa;
-        border-radius: 8px;
-
-        .info-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 12px;
-          font-size: 14px;
-          color: #1c1d1f;
-
-          &:last-child {
-            margin-bottom: 0;
-          }
-
-          mat-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-            color: #6a6f73;
-          }
-        }
-      }
-
-      .guarantees {
-        .guarantee-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          margin-bottom: 8px;
-          font-size: 14px;
-          color: #1c1d1f;
-
-          mat-icon {
-            font-size: 16px;
-            width: 16px;
-            height: 16px;
-            color: #1c1d1f;
-          }
+          width: 16px;
+          height: 16px;
+          color: #6a6f73;
         }
       }
     }
+
+    .guarantees {
+      .guarantee-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        color: #1c1d1f;
+
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+          color: #1c1d1f;
+        }
+      }
+    }
+  }
 }
