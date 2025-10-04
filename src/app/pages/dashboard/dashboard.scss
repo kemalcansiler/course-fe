@@ -1,0 +1,186 @@
+// Banner Section
+.banner-section {
+  width: 100%;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+.banner-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  object-position: center;
+}
+
+// Main Container
+.main-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+// Loading
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+// Course Listing Section
+.course-listing-section {
+  width: 100%;
+}
+
+// Listing Header
+.listing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 16px 0;
+  border-bottom: 1px solid #d1d7dc;
+}
+
+.sort-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.sort-field {
+  min-width: 200px;
+
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  ::ng-deep .mat-mdc-form-field-bottom-align {
+    display: none;
+  }
+}
+
+.results-count {
+  font-size: 14px;
+  color: #6a6f73;
+  font-weight: 500;
+}
+
+// Desktop Layout
+.desktop-layout {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+
+.filters-sidebar {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.courses-grid {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+// Mobile Layout
+.mobile-layout {
+  display: none;
+}
+
+.mobile-filters-section {
+  margin-bottom: 16px;
+}
+
+.mobile-courses-grid {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 32px;
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .courses-grid {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    padding: 0 12px;
+  }
+
+  .banner-image {
+    height: 150px;
+  }
+
+  .listing-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .sort-section {
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .sort-field {
+    min-width: 140px;
+    width: 100%;
+  }
+
+  .results-count {
+    font-size: 12px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .desktop-layout {
+    display: none;
+  }
+
+  .mobile-layout {
+    display: block;
+  }
+
+  .mobile-courses-grid {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner-image {
+    height: 120px;
+  }
+
+  .main-container {
+    padding: 0 8px;
+  }
+
+  .listing-header {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 0;
+    align-items: stretch;
+  }
+
+  .sort-section {
+    justify-content: center;
+  }
+
+  .sort-field {
+    min-width: 120px;
+    width: 100%;
+  }
+
+  .results-count {
+    text-align: center;
+    font-size: 11px;
+  }
+}

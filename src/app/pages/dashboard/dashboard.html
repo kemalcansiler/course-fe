@@ -1,0 +1,83 @@
+<!-- Banner Section -->
+<div class="banner-section">
+  <img src="banner.png" alt="Course Learning Banner" class="banner-image" priority="true" />
+</div>
+
+<!-- Main Content Container -->
+<div class="main-container">
+  <!-- Loading Spinner -->
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+    </div>
+  }
+
+  <!-- Course Listing Section -->
+  <div class="course-listing-section">
+    <!-- Header with Sort and Results Count -->
+    <div class="listing-header">
+      <div class="sort-section">
+        <mat-form-field appearance="outline" class="sort-field">
+          <mat-label>Sort by</mat-label>
+          <mat-select [value]="sortBy()" (selectionChange)="onSortChange($event.value)">
+            <mat-option value="most-popular">Most Popular</mat-option>
+            <mat-option value="highest-rated">Highest Rated</mat-option>
+            <mat-option value="newest">Newest</mat-option>
+            <mat-option value="price-low-to-high">Price: Low to High</mat-option>
+            <mat-option value="price-high-to-low">Price: High to Low</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="results-count">{{ courseData().totalResults | number }} results</div>
+    </div>
+
+    <!-- Desktop Layout: Sidebar + Content -->
+    <div class="desktop-layout">
+      <!-- Filters Sidebar -->
+      <div class="filters-sidebar">
+        <app-course-filters
+          [filters]="courseData().filters"
+          (filterChange)="onFilterChange($event)"
+        />
+      </div>
+
+      <!-- Course Grid -->
+      <div class="courses-grid">
+        @for (course of courseData().courses; track course.id; let last = $last) {
+          <app-course-card [course]="course" />
+          @if (!last) {
+            <mat-divider />
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Mobile Layout: Filters + Content -->
+    <div class="mobile-layout">
+      <!-- Mobile Filters -->
+      <div class="mobile-filters-section">
+        <app-course-filters
+          [filters]="courseData().filters"
+          (filterChange)="onFilterChange($event)"
+        />
+      </div>
+
+      <!-- Mobile Course Grid -->
+      <div class="mobile-courses-grid">
+        @for (course of courseData().courses; track course.id; let last = $last) {
+          <app-course-card [course]="course" />
+          @if (!last) {
+            <mat-divider />
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <app-course-pagination
+      [pagination]="courseData().pagination"
+      (pageChange)="onPageChange($event)"
+    />
+  </div>
+</div>

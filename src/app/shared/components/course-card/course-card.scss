@@ -1,0 +1,179 @@
+.course-list-item {
+  cursor: pointer;
+  display: flex;
+  gap: 16px;
+  padding: 16px 0;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.course-image-container {
+  position: relative;
+  width: 240px;
+  height: 135px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.course-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.course-main-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.course-price-section {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 4px;
+}
+
+.course-title {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+  color: #1c1d1f;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-headline {
+  font-size: 14px;
+  color: #6a6f73;
+  line-height: 1.4;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.instructor-info {
+  margin: 4px 0;
+}
+
+.instructor-name {
+  font-size: 14px;
+  color: #6a6f73;
+}
+
+.rating-info {
+  margin: 4px 0;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rating-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #b4690e;
+}
+
+.stars {
+  display: flex;
+  gap: 1px;
+}
+
+.star-icon {
+  font-size: 16px;
+  color: #b4690e;
+  width: 16px;
+  height: 16px;
+}
+
+.rating-count {
+  font-size: 14px;
+  color: #6a6f73;
+  margin-left: 4px;
+}
+
+.course-details {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6a6f73;
+  margin: 4px 0;
+}
+
+.separator {
+  color: #6a6f73;
+  font-weight: bold;
+}
+
+.price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1c1d1f;
+
+  &.free {
+    color: #0f5132;
+  }
+}
+
+// Mobile responsive adjustments
+@media (max-width: 768px) {
+  .course-list-item {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .course-image-container {
+    width: 100%;
+    height: 200px;
+  }
+
+  .course-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .course-price-section {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 480px) {
+  .course-list-item {
+    padding: 8px 0;
+  }
+
+  .course-image-container {
+    height: 150px;
+  }
+
+  .course-title {
+    font-size: 14px;
+  }
+
+  .course-headline {
+    font-size: 12px;
+  }
+
+  .price {
+    font-size: 16px;
+  }
+}
