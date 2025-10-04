@@ -5,7 +5,7 @@ import { Component } from '@angular/core';
   template: `
     <footer class="footer">
       <div class="footer-content">
-        <p>&copy; 2024 Course FE. All rights reserved.</p>
+        <p>&copy; 2024 Course App. All rights reserved.</p>
       </div>
     </footer>
   `,

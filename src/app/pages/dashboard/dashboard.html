@@ -1,17 +1,10 @@
 <!-- Banner Section -->
 <div class="banner-section">
-  <img src="banner.png" alt="Course Learning Banner" class="banner-image" priority="true" />
+  <img src="banner.png" alt="Course Learning Banner" class="banner-image" />
 </div>
 
 <!-- Main Content Container -->
 <div class="main-container">
-  <!-- Loading Spinner -->
-  @if (loading()) {
-    <div class="loading-container">
-      <mat-spinner diameter="50"></mat-spinner>
-    </div>
-  }
-
   <!-- Course Listing Section -->
   <div class="course-listing-section">
     <!-- Header with Sort and Results Count -->
@@ -29,7 +22,13 @@
         </mat-form-field>
       </div>
 
-      <div class="results-count">{{ courseData().totalResults | number }} results</div>
+      <div class="results-count">
+        @if (loading()) {
+          <div class="skeleton-text"></div>
+        } @else {
+          {{ courseData().totalResults | number }} results
+        }
+      </div>
     </div>
 
     <!-- Desktop Layout: Sidebar + Content -->
@@ -44,10 +43,24 @@
 
       <!-- Course Grid -->
       <div class="courses-grid">
-        @for (course of courseData().courses; track course.id; let last = $last) {
-          <app-course-card [course]="course" />
-          @if (!last) {
-            <mat-divider />
+        @if (loading()) {
+          @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+            <app-course-skeleton />
+          }
+        } @else if (courseData().courses.length === 0) {
+          <app-no-data-found
+            title="No Courses Found"
+            message="We couldn't find any courses matching your criteria. Try adjusting your filters or search terms."
+            [showAction]="true"
+            actionText="Clear Filters"
+            [actionClick]="clearFilters"
+          />
+        } @else {
+          @for (course of courseData().courses; track course.id; let last = $last) {
+            <app-course-card [course]="course" />
+            @if (!last) {
+              <mat-divider />
+            }
           }
         }
       </div>
@@ -65,19 +78,35 @@
 
       <!-- Mobile Course Grid -->
       <div class="mobile-courses-grid">
-        @for (course of courseData().courses; track course.id; let last = $last) {
-          <app-course-card [course]="course" />
-          @if (!last) {
-            <mat-divider />
+        @if (loading()) {
+          @for (item of [1, 2, 3, 4, 5, 6]; track item) {
+            <app-course-skeleton />
+          }
+        } @else if (courseData().courses.length === 0) {
+          <app-no-data-found
+            title="No Courses Found"
+            message="We couldn't find any courses matching your criteria. Try adjusting your filters or search terms."
+            [showAction]="true"
+            actionText="Clear Filters"
+            [actionClick]="clearFilters"
+          />
+        } @else {
+          @for (course of courseData().courses; track course.id; let last = $last) {
+            <app-course-card [course]="course" />
+            @if (!last) {
+              <mat-divider />
+            }
           }
         }
       </div>
     </div>
 
     <!-- Pagination -->
-    <app-course-pagination
-      [pagination]="courseData().pagination"
-      (pageChange)="onPageChange($event)"
-    />
+    @if (!loading() && courseData().courses.length > 0) {
+      <app-course-pagination
+        [pagination]="courseData().pagination"
+        (pageChange)="onPageChange($event)"
+      />
+    }
   </div>
 </div>

@@ -34,11 +34,11 @@ import { FilterOption } from '../../../core/models/course.model';
             <mat-expansion-panel-header>
               <mat-panel-title>{{ filter.label }}</mat-panel-title>
             </mat-expansion-panel-header>
-            
+
             <div class="filter-options">
               @for (option of filter.options; track option.value) {
                 <div class="filter-option">
-                  <mat-checkbox 
+                  <mat-checkbox
                     [checked]="option.isSelected"
                     (change)="onFilterChange(filter.key, option.value, $event.checked)"
                     class="filter-checkbox"
@@ -60,11 +60,11 @@ import { FilterOption } from '../../../core/models/course.model';
             <mat-expansion-panel-header>
               <mat-panel-title>{{ filter.label }}</mat-panel-title>
             </mat-expansion-panel-header>
-            
+
             <div class="filter-options">
               @for (option of filter.options; track option.value) {
                 <div class="filter-option">
-                  <mat-checkbox 
+                  <mat-checkbox
                     [checked]="option.isSelected"
                     (change)="onFilterChange(filter.key, option.value, $event.checked)"
                     class="filter-checkbox"
@@ -89,7 +89,7 @@ export class CourseFilters {
   mobileFiltersOpen = signal(false);
 
   toggleMobileFilters() {
-    this.mobileFiltersOpen.update(open => !open);
+    this.mobileFiltersOpen.update((open) => !open);
   }
 
   onFilterChange(key: string, value: string, checked: boolean) {

@@ -65,7 +65,9 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
             </form>
 
             <mat-divider style="margin: 24px 0;">
-              <span style="background-color: white; padding: 0 16px; font-size: 14px;">Other sign-in options</span>
+              <span style="background-color: white; padding: 0 16px; font-size: 14px;"
+                >Other sign-in options</span
+              >
             </mat-divider>
 
             <div class="social-login">
@@ -86,7 +88,12 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 
           <mat-card-actions style="text-align: center; padding: 16px;">
             <p style="margin: 0; font-size: 14px;">
-              Don't have an account? <a routerLink="/register" style="color: #a435f0; text-decoration: none; font-weight: 600;">Sign up</a>
+              Don't have an account?
+              <a
+                routerLink="/register"
+                style="color: #a435f0; text-decoration: none; font-weight: 600;"
+                >Sign up</a
+              >
             </p>
           </mat-card-actions>
         </mat-card>

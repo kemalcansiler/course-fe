@@ -1,59 +1,164 @@
-# CourseFe
+# Course Learning Platform - Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.3.
+A modern Angular-based course learning platform built with Angular Material and TypeScript.
 
-## Development server
+## 🚀 Features
 
-To start a local development server, run:
+- **Course Dashboard** - Browse and search courses with advanced filtering
+- **Course Detail Pages** - Comprehensive course information and enrollment
+- **Responsive Design** - Mobile-first approach with Material Design
+- **Modern UI/UX** - Clean, professional interface with skeleton loading
+- **Real-time Search** - Instant course filtering and sorting
+- **Pagination** - Server-side compatible pagination system
 
-```bash
-ng serve
+## 🛠️ Tech Stack
+
+- **Angular 20** - Latest Angular framework with standalone components
+- **Angular Material** - UI component library
+- **TypeScript** - Type-safe development
+- **RxJS** - Reactive programming
+- **SCSS** - Enhanced CSS with variables and mixins
+- **Signals** - Modern Angular state management
+
+## 📦 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd course-fe
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start development server**
+   ```bash
+   npm start
+   ```
+
+4. **Open in browser**
+   ```
+   http://localhost:4200
+   ```
+
+## 🏗️ Project Structure
+
+```
+src/
+├── app/
+│   ├── core/                    # Core services and models
+│   │   ├── models/             # TypeScript interfaces
+│   │   └── services/           # Business logic services
+│   ├── pages/                  # Page components
+│   │   ├── dashboard/          # Course listing page
+│   │   ├── course-detail/      # Course detail page
+│   │   └── auth/               # Authentication pages
+│   ├── shared/                 # Reusable components
+│   │   └── components/         # Shared UI components
+│   └── layout/                 # Layout components
+│       ├── header/             # Navigation header
+│       └── footer/             # Page footer
+├── assets/                     # Static assets
+└── styles/                     # Global styles
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## 🎯 Key Components
 
-## Code scaffolding
+### Pages
+- **Dashboard** - Course listing with filters and search
+- **Course Detail** - Individual course information and enrollment
+- **Authentication** - Login and registration pages
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Shared Components
+- **Course Card** - Course preview component
+- **Course Filters** - Advanced filtering system
+- **Course Pagination** - Navigation controls
+- **Skeleton Loaders** - Loading state components
 
-```bash
-ng generate component component-name
-```
+### Services
+- **Course Service** - Course data management
+- **Course Detail Service** - Detailed course information
+- **Auth Service** - Authentication handling
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## 🎨 Design System
 
-```bash
-ng generate --help
-```
+- **Material Design 3** - Google's latest design system
+- **Responsive Breakpoints** - Mobile, tablet, and desktop
+- **Color Palette** - Consistent brand colors
+- **Typography** - Material Design typography scale
+- **Spacing** - 8px grid system
 
-## Building
+## 🔧 Development
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+### Available Scripts
 
 ```bash
-ng e2e
+# Development server
+npm start
+
+# Build for production
+npm run build
+
+# Run tests
+npm test
+
+# Lint code
+npm run lint
+
+# Format code
+npm run format
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Code Style
 
-## Additional Resources
+- **TypeScript strict mode** enabled
+- **Angular standalone components** preferred
+- **Signals** for state management
+- **Reactive forms** over template-driven
+- **SCSS** for styling with BEM methodology
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 📱 Responsive Design
+
+- **Mobile First** - Optimized for mobile devices
+- **Breakpoints**:
+  - Mobile: < 768px
+  - Tablet: 768px - 1024px
+  - Desktop: > 1024px
+
+## 🚀 Deployment
+
+The application is built for production with:
+
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+## 📚 Documentation
+
+Detailed documentation is available in the `/docs` folder:
+
+- [Component Documentation](./docs/components.md)
+- [Styling Guide](./docs/styling.md)
+- [Development Guide](./docs/development.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🔗 Links
+
+- [Angular Documentation](https://angular.io/docs)
+- [Angular Material](https://material.angular.io/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)

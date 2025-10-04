@@ -1,1 +1,219 @@
-<p>course-detail works!</p>
+<div class="course-detail-container">
+  <!-- Background Image -->
+  <div class="background-image"></div>
+
+  @if (loading()) {
+    <app-course-detail-skeleton></app-course-detail-skeleton>
+  } @else if (course()) {
+    <div class="course-detail-layout">
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Breadcrumbs -->
+        <nav class="breadcrumbs">
+          <span>Programming</span>
+          <mat-icon>chevron_right</mat-icon>
+          <span>Web Development</span>
+          <mat-icon>chevron_right</mat-icon>
+          <span>JavaScript</span>
+        </nav>
+
+        <!-- Course Header -->
+        <div class="course-header">
+          <h1 class="course-title">{{ course()!.title }}</h1>
+          <p class="course-subtitle">{{ course()!.headline }}</p>
+
+          <div class="course-badges">
+            @for (badge of course()!.badges; track badge) {
+              <mat-chip class="badge-chip">{{ badge }}</mat-chip>
+            }
+          </div>
+
+          <div class="course-meta">
+            <div class="instructor-info">
+              <span
+                >Created by <strong>{{ course()!.instructorName }}</strong></span
+              >
+            </div>
+            <div class="last-updated">
+              <span>Last updated {{ course()!.lastUpdated }}</span>
+            </div>
+            <div class="language-info">
+              <span>{{ course()!.language }}</span>
+              <span
+                >{{ course()!.subtitles.slice(0, 3).join(', ') }},
+                {{ course()!.subtitles.length - 3 }} more</span
+              >
+            </div>
+          </div>
+
+
+          <div class="rating-section">
+            <div class="rating">
+              <span class="rating-value">{{ course()!.averageRating | number: '1.1-1' }}</span>
+              <div class="stars">
+                @for (star of getStars(course()!.averageRating); track $index) {
+                  <mat-icon class="star-icon">{{ star }}</mat-icon>
+                }
+              </div>
+              <span class="rating-count">({{ course()!.ratingCount | number }} ratings)</span>
+            </div>
+            <div class="students-count">
+              <mat-icon>people</mat-icon>
+              <span>{{ course()!.totalStudents | number }} learners</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- What You'll Learn -->
+        <div class="what-youll-learn">
+          <h2>What you'll learn</h2>
+          <div class="learning-points">
+            @for (point of course()!.whatYouWillLearn; track $index) {
+              <div class="learning-point">
+                <mat-icon>check</mat-icon>
+                <span>{{ point }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Course Content -->
+        <div class="course-content">
+          <div class="content-header">
+            <h2>Course content</h2>
+            <div class="content-summary">
+              <span
+                >{{ course()!.sections }} sections • {{ course()!.lectureCount }} lectures •
+                {{ course()!.duration }} total length</span
+              >
+              <button mat-button (click)="expandAllSections()">Expand all sections</button>
+            </div>
+          </div>
+
+          <mat-accordion class="curriculum-accordion">
+            @for (section of course()!.curriculum; track section.id) {
+              <mat-expansion-panel [expanded]="section.isExpanded" class="curriculum-section">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    <div class="section-title">
+                      <span>{{ section.title }}</span>
+                      <span class="section-meta"
+                        >{{ section.lectures }} lectures • {{ section.duration }}</span
+                      >
+                    </div>
+                  </mat-panel-title>
+                </mat-expansion-panel-header>
+
+                <div class="section-lessons">
+                  @for (lesson of section.lessons; track lesson.id) {
+                    <div class="lesson-item">
+                      <mat-icon class="lesson-icon">{{ getLessonIcon(lesson.type) }}</mat-icon>
+                      <div class="lesson-content">
+                        <span class="lesson-title">{{ lesson.title }}</span>
+                        @if (lesson.isPreview) {
+                          <span class="preview-badge">Preview</span>
+                        }
+                      </div>
+                      <span class="lesson-duration">{{ lesson.duration }}</span>
+                    </div>
+                  }
+                </div>
+              </mat-expansion-panel>
+            }
+          </mat-accordion>
+        </div>
+
+        <!-- Course Includes -->
+        <div class="course-includes">
+          <h2>This course includes:</h2>
+          <div class="includes-grid">
+            @for (include of course()!.courseIncludes; track include.text) {
+              <div class="include-item">
+                <mat-icon>{{ include.icon }}</mat-icon>
+                <span>{{ include.text }}</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Related Topics -->
+        <div class="related-topics">
+          <h2>Explore related topics</h2>
+          <div class="topics-chips">
+            @for (topic of course()!.relatedTopics; track topic) {
+              <mat-chip class="topic-chip">{{ topic }}</mat-chip>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <div class="video-preview">
+          <div class="video-container">
+            <img
+              [src]="course()!.imageUrl"
+              [alt]="course()!.title"
+              width="480"
+              height="270"
+              class="video-thumbnail"
+            />
+            <div class="play-button">
+              <mat-icon>play_circle_filled</mat-icon>
+            </div>
+          </div>
+          <p class="preview-text">Preview this course</p>
+        </div>
+
+        <div class="purchase-section">
+          <div class="price-display">
+            <span class="current-price">₺{{ course()!.price | number: '1.2-2' }}</span>
+          </div>
+          
+          <div class="purchase-buttons">
+            <button mat-raised-button color="primary" class="enroll-button">
+              Enroll Now
+            </button>
+          </div>
+
+          <div class="course-info">
+            <div class="info-item">
+              <mat-icon>schedule</mat-icon>
+              <span>{{ course()!.duration }} total length</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>play_circle</mat-icon>
+              <span>{{ course()!.lectureCount }} lectures</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>language</mat-icon>
+              <span>{{ course()!.language }}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>workspace_premium</mat-icon>
+              <span>Certificate of completion</span>
+            </div>
+          </div>
+
+          <div class="guarantees">
+            <div class="guarantee-item">
+              <mat-icon>verified</mat-icon>
+              <span>30-Day Money-Back Guarantee</span>
+            </div>
+            <div class="guarantee-item">
+              <mat-icon>schedule</mat-icon>
+              <span>Lifetime Access</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="error-container">
+      <mat-icon>error</mat-icon>
+      <h2>Course not found</h2>
+      <p>The course you're looking for doesn't exist or has been removed.</p>
+      <button mat-raised-button color="primary" (click)="goBack()">Go Back</button>
+    </div>
+  }
+</div>
