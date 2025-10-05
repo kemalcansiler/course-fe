@@ -1,4 +1,4 @@
-import { Component, signal, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
@@ -11,7 +11,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CourseDetailService } from '../../core/services/course-detail.service';
-import { CoursePricing } from '../../core/models/course-detail.model';
 import { CourseDetailSkeleton } from '../../shared/components/course-detail-skeleton/course-detail-skeleton';
 
 @Component({
@@ -32,6 +31,7 @@ import { CourseDetailSkeleton } from '../../shared/components/course-detail-skel
   ],
   templateUrl: './course-detail.html',
   styleUrls: ['./course-detail.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CourseDetail implements OnInit {
   private courseDetailService = inject(CourseDetailService);
@@ -41,48 +41,20 @@ export class CourseDetail implements OnInit {
   // Service signals
   course = this.courseDetailService.course;
   loading = this.courseDetailService.isLoading;
-  hasError = this.courseDetailService.hasError;
-
-  // Local state
-  pricing = signal<CoursePricing>({
-    originalPrice: 0,
-    currentPrice: 0,
-    discountPercentage: 0,
-    currency: '₺',
-    isOnSale: false,
-    subscriptionPrice: 0,
-    subscriptionTrialDays: 0,
-  });
 
   ngOnInit() {
     this.route.params.subscribe((params) => {
       const courseId = params['id'];
       if (courseId) {
         this.loadCourseDetail(courseId);
-        this.loadPricing(courseId);
       }
     });
   }
 
   loadCourseDetail(courseId: string) {
     this.courseDetailService.loadCourseDetail(courseId).subscribe({
-      next: (courseDetail) => {
-        // Data is already set in the service
-      },
-      error: (error) => {
-        console.error('Error loading course detail:', error);
-      },
+      error: () => this.router.navigate(['/']),
     });
-  }
-
-  loadPricing(courseId: string) {
-    this.courseDetailService.getCoursePricing(courseId).subscribe((pricing) => {
-      this.pricing.set(pricing);
-    });
-  }
-
-  toggleSection(sectionId: string) {
-    this.courseDetailService.toggleSection(sectionId);
   }
 
   expandAllSections() {
