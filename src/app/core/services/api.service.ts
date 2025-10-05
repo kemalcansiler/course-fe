@@ -1,17 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ApiService {
+  private http = inject(HttpClient);
+
   private readonly baseUrl = environment.apiUrl;
   private readonly apiVersion = environment.apiVersion;
-
-  constructor(private http: HttpClient) {}
 
   /**
    * Get full API URL for a given endpoint

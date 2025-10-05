@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import {
@@ -14,6 +14,8 @@ import { ApiService } from './api.service';
   providedIn: 'root',
 })
 export class AuthService {
+  private apiService = inject(ApiService);
+
   private readonly TOKEN_KEY = 'auth_token';
 
   // Signals for reactive state management
@@ -27,8 +29,6 @@ export class AuthService {
   currentUser = computed(() => this._currentUser());
   isLoading = computed(() => this._isLoading());
   error = computed(() => this._error());
-
-  constructor(private apiService: ApiService) {}
 
   /**
    * Login method - calls real API

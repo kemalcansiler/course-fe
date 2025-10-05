@@ -123,12 +123,14 @@ import { LoginRequest } from '../../../core/models/user.model';
   styleUrls: ['./login.scss'],
 })
 export class Login {
+  private fb = inject(FormBuilder);
+
   loginForm: FormGroup;
   authService = inject(AuthService);
   router = inject(Router);
   snackBar = inject(MatSnackBar);
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],

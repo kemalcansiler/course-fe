@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ProfileDto, UpdateProfileRequest } from '../models/profile.model';
@@ -8,6 +8,8 @@ import { ApiService } from './api.service';
   providedIn: 'root',
 })
 export class ProfileService {
+  private apiService = inject(ApiService);
+
   private _profile = signal<ProfileDto | null>(null);
   private _isLoading = signal<boolean>(false);
   private _error = signal<string | null>(null);
@@ -16,8 +18,6 @@ export class ProfileService {
   profile = computed(() => this._profile());
   isLoading = computed(() => this._isLoading());
   error = computed(() => this._error());
-
-  constructor(private apiService: ApiService) {}
 
   /**
    * Get user profile from API

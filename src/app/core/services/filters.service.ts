@@ -1,10 +1,12 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { Observable, of, delay, map, catchError } from 'rxjs';
 import { FilterOption } from '../models/course.model';
 import { ApiService } from './api.service';
 
 @Injectable({ providedIn: 'root' })
 export class FiltersService {
+  private apiService = inject(ApiService);
+
   private filtersData = signal<FilterOption[]>([]);
   private loading = signal(false);
   private error = signal<string | null>(null);
@@ -13,8 +15,6 @@ export class FiltersService {
   filters = computed(() => this.filtersData());
   isLoading = computed(() => this.loading());
   hasError = computed(() => this.error());
-
-  constructor(private apiService: ApiService) {}
 
   // Load filters from API
   loadFilters(): Observable<FilterOption[]> {

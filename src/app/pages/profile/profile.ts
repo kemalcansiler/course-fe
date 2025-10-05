@@ -459,6 +459,8 @@ import { ProfileDto } from '../../core/models/profile.model';
   ],
 })
 export class Profile implements OnInit {
+  private fb = inject(FormBuilder);
+
   profile = signal<ProfileDto | null>(null);
   isUpdating = signal<boolean>(false);
   profileForm: FormGroup;
@@ -467,7 +469,7 @@ export class Profile implements OnInit {
   profileService = inject(ProfileService);
   snackBar = inject(MatSnackBar);
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.profileForm = this.fb.group({
       firstName: ['', [Validators.required, Validators.minLength(2)]],
       lastName: ['', [Validators.required, Validators.minLength(2)]],

@@ -169,12 +169,14 @@ import { RegisterRequest } from '../../../core/models/user.model';
   styleUrls: ['./register.scss'],
 })
 export class Register {
+  private fb = inject(FormBuilder);
+
   registerForm: FormGroup;
   authService = inject(AuthService);
   router = inject(Router);
   snackBar = inject(MatSnackBar);
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.registerForm = this.fb.group(
       {
         firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
