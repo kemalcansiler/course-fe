@@ -173,20 +173,23 @@ npm test -- --include='**/auth.service.spec.ts'
 
 ### Test Coverage
 
-The test suite includes **54 comprehensive tests** covering:
-- ✅ **AuthService** (12 tests) - Authentication, session management, JWT handling
-- ✅ **CourseService** (7 tests) - Course operations, filtering, sorting
-- ✅ **ApiService** (10 tests) - HTTP operations, error handling
-- ✅ **Auth Guards** (4 tests) - Route protection logic
-- ✅ **Login Component** (9 tests) - Form validation, user interactions
-- ✅ **CourseCard Component** (6 tests) - Component rendering and logic
-- ✅ **Other Components** (6 tests) - Dashboard, course detail, app
+The test suite includes **123 comprehensive tests** covering:
+- ✅ **Core Services** (39 tests) - Auth, Course, API, Profile, Filters, CourseDetail services
+- ✅ **Auth Guards** (4 tests) - Route protection logic (authGuard, guestGuard)
+- ✅ **Components** (80 tests) - Login, Register, Dashboard, CourseDetail, Header, Footer, and all shared components
+
+**Test Breakdown by Module:**
+- **Services**: AuthService, CourseService, ApiService, ProfileService, FiltersService, CourseDetailService
+- **Guards**: Auth guards for protected and public routes
+- **Pages**: Login, Register, Dashboard, CourseDetail, Profile
+- **Layout**: Header, Footer components with authentication state
+- **Shared Components**: CourseCard, CoursePagination, UserMenu, NoDataFound, Skeleton loaders
 
 **Current Coverage:**
-- Statements: 45%+
-- Functions: 36%+
-- Services: Well covered
-- Components: Core logic tested
+- **Lines**: 85.41% (369/432)
+- **Statements**: 85.06% (410/482)
+- **Functions**: 80.55% (116/144)
+- **Branches**: 73.58% (78/106)
 
 ### Coverage Reports
 
@@ -205,13 +208,14 @@ open coverage/index.html
 
 ### Example Test Run Output
 ```
-Chrome Headless: Executed 54 of 54 SUCCESS (0.3 secs / 0.287 secs)
+Chrome Headless: Executed 123 of 123 SUCCESS (0.563 secs / 0.529 secs)
+TOTAL: 123 SUCCESS
 
 =============================== Coverage summary ===============================
-Statements   : 45.34% ( 190/419 )
-Branches     : 18.08% ( 17/94 )
-Functions    : 36% ( 45/125 )
-Lines        : 45.47% ( 171/376 )
+Statements   : 85.06% ( 410/482 )
+Branches     : 73.58% ( 78/106 )
+Functions    : 80.55% ( 116/144 )
+Lines        : 85.41% ( 369/432 )
 ================================================================================
 ```
 
