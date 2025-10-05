@@ -20,60 +20,52 @@
         <!-- Course Header -->
         <div class="course-header">
           <h1 class="course-title">{{ course()!.title }}</h1>
-          <p class="course-subtitle">{{ course()!.headline }}</p>
+          <p class="course-subtitle">{{ course()!.shortDescription }}</p>
 
           <div class="course-badges">
-            @for (badge of course()!.badges; track badge) {
-              <mat-chip class="badge-chip">{{ badge }}</mat-chip>
+            @if (course()!.isFeatured) {
+              <mat-chip class="badge-chip">Featured</mat-chip>
             }
           </div>
 
           <div class="course-meta">
             <div class="instructor-info">
               <span
-                >Created by <strong>{{ course()!.instructorName }}</strong></span
+                >Created by
+                <strong
+                  >{{ course()!.instructor.firstName }} {{ course()!.instructor.lastName }}</strong
+                ></span
               >
             </div>
             <div class="last-updated">
-              <span>Last updated {{ course()!.lastUpdated }}</span>
+              <span>Created {{ course()!.createdAt | date }}</span>
             </div>
             <div class="language-info">
               <span>{{ course()!.language }}</span>
-              <span
-                >{{ course()!.subtitles.slice(0, 3).join(', ') }},
-                {{ course()!.subtitles.length - 3 }} more</span
-              >
             </div>
           </div>
 
           <div class="rating-section">
             <div class="rating">
-              <span class="rating-value">{{ course()!.averageRating | number: '1.1-1' }}</span>
+              <span class="rating-value">{{ course()!.rating | number: '1.1-1' }}</span>
               <div class="stars">
-                @for (star of getStars(course()!.averageRating); track $index) {
+                @for (star of getStars(course()!.rating); track $index) {
                   <mat-icon class="star-icon">{{ star }}</mat-icon>
                 }
               </div>
-              <span class="rating-count">({{ course()!.ratingCount | number }} ratings)</span>
+              <span class="rating-count">({{ course()!.reviewCount | number }} ratings)</span>
             </div>
             <div class="students-count">
               <mat-icon>people</mat-icon>
-              <span>{{ course()!.totalStudents | number }} learners</span>
+              <span>{{ course()!.enrollmentCount | number }} learners</span>
             </div>
           </div>
         </div>
 
-        <!-- What You'll Learn -->
-        <div class="what-youll-learn">
-          <h2>What you'll learn</h2>
-          <div class="learning-points">
-            @for (point of course()!.whatYouWillLearn; track $index) {
-              <div class="learning-point">
-                <mat-icon>check</mat-icon>
-                <span>{{ point }}</span>
-              </div>
-            }
-          </div>
+        <!-- Course Description -->
+        <div class="course-description">
+          <h2>About this course</h2>
+          <p>{{ course()!.description }}</p>
         </div>
 
         <!-- Course Content -->
@@ -82,7 +74,7 @@
             <h2>Course content</h2>
             <div class="content-summary">
               <span
-                >{{ course()!.sections }} sections • {{ course()!.lectureCount }} lectures •
+                >{{ course()!.sections }} sections • {{ course()!.lectures || 0 }} lectures •
                 {{ course()!.duration }} total length</span
               >
               <button mat-button (click)="expandAllSections()">Expand all sections</button>
@@ -180,7 +172,7 @@
             </div>
             <div class="info-item">
               <mat-icon>play_circle</mat-icon>
-              <span>{{ course()!.lectureCount }} lectures</span>
+              <span>{{ course()!.lectures || 0 }} lectures</span>
             </div>
             <div class="info-item">
               <mat-icon>language</mat-icon>

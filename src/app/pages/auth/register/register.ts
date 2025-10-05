@@ -48,16 +48,24 @@ import { RegisterRequest } from '../../../core/models/user.model';
 
           <mat-card-content>
             <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-              <mat-form-field appearance="outline" class="full-width">
-                <mat-label>Full name</mat-label>
-                <input
-                  matInput
-                  type="text"
-                  formControlName="fullName"
-                  placeholder="Enter your full name"
-                />
-                <mat-icon matSuffix>person</mat-icon>
-              </mat-form-field>
+              <div style="display: flex; gap: 8px;">
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>First name</mat-label>
+                  <input
+                    matInput
+                    type="text"
+                    formControlName="firstName"
+                    placeholder="First name"
+                  />
+                  <mat-icon matSuffix>person</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="half-width">
+                  <mat-label>Last name</mat-label>
+                  <input matInput type="text" formControlName="lastName" placeholder="Last name" />
+                  <mat-icon matSuffix>person</mat-icon>
+                </mat-form-field>
+              </div>
 
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Email</mat-label>
@@ -68,6 +76,37 @@ import { RegisterRequest } from '../../../core/models/user.model';
                   placeholder="Enter your email address"
                 />
                 <mat-icon matSuffix>email</mat-icon>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Password</mat-label>
+                <input
+                  matInput
+                  type="password"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                />
+                <mat-icon matSuffix>lock</mat-icon>
+                @if (registerForm.get('password')?.errors?.['passwordStrength']) {
+                  <mat-error
+                    >Password must contain at least 8 characters, one digit, one lowercase, one
+                    uppercase, and one special character</mat-error
+                  >
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Confirm Password</mat-label>
+                <input
+                  matInput
+                  type="password"
+                  formControlName="confirmPassword"
+                  placeholder="Confirm your password"
+                />
+                <mat-icon matSuffix>lock</mat-icon>
+                @if (registerForm.get('confirmPassword')?.errors?.['passwordMismatch']) {
+                  <mat-error>Passwords do not match</mat-error>
+                }
               </mat-form-field>
 
               <button
@@ -136,39 +175,81 @@ export class Register {
   snackBar = inject(MatSnackBar);
 
   constructor(private fb: FormBuilder) {
-    this.registerForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      offers: [false],
-    });
+    this.registerForm = this.fb.group(
+      {
+        firstName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+        lastName: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+        email: ['', [Validators.required, Validators.email]],
+        password: [
+          '',
+          [Validators.required, Validators.minLength(8), this.passwordStrengthValidator],
+        ],
+        confirmPassword: ['', [Validators.required]],
+        offers: [false],
+      },
+      { validators: this.passwordMatchValidator },
+    );
   }
 
-  async onSubmit() {
+  passwordStrengthValidator(control: any) {
+    const password = control.value;
+    if (!password) return null;
+
+    const hasMinLength = password.length >= 8;
+    const hasDigit = /\d/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (!hasMinLength || !hasDigit || !hasLowercase || !hasUppercase || !hasSpecialChar) {
+      return { passwordStrength: true };
+    }
+
+    return null;
+  }
+
+  passwordMatchValidator(form: FormGroup) {
+    const password = form.get('password');
+    const confirmPassword = form.get('confirmPassword');
+
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      confirmPassword.setErrors({ passwordMismatch: true });
+      return { passwordMismatch: true };
+    }
+
+    return null;
+  }
+
+  onSubmit() {
     if (this.registerForm.valid) {
-      try {
-        const registerRequest: RegisterRequest = {
-          fullName: this.registerForm.value.fullName,
-          email: this.registerForm.value.email,
-        };
+      const registerRequest: RegisterRequest = {
+        firstName: this.registerForm.value.firstName,
+        lastName: this.registerForm.value.lastName,
+        email: this.registerForm.value.email,
+        password: this.registerForm.value.password,
+        confirmPassword: this.registerForm.value.confirmPassword,
+      };
 
-        await this.authService.register(registerRequest);
+      this.authService.register(registerRequest).subscribe({
+        next: (response) => {
+          this.snackBar.open('Registration successful!', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
 
-        this.snackBar.open('Registration successful!', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-
-        // Redirect to dashboard
-        this.router.navigate(['/']);
-      } catch (error) {
-        this.snackBar.open('Registration failed. Please try again.', 'Close', {
-          duration: 5000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-        console.error('Registration error:', error);
-      }
+          // Redirect to dashboard
+          this.router.navigate(['/']);
+        },
+        error: (error) => {
+          this.snackBar.open('Registration failed. Please try again.', 'Close', {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+          console.error('Registration error:', error);
+        },
+      });
     }
   }
 }

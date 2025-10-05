@@ -13,7 +13,7 @@ import { CoursePagination } from '../../shared/components/course-pagination/cour
 import { CourseSkeleton } from '../../shared/components/course-skeleton/course-skeleton';
 import { NoDataFound } from '../../shared/components/no-data-found/no-data-found';
 import { CourseService } from '../../core/services/course.service';
-import { CourseSearchResponse } from '../../core/models/course.model';
+import { FiltersService } from '../../core/services/filters.service';
 import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
@@ -38,6 +38,7 @@ import { MatDividerModule } from '@angular/material/divider';
 })
 export class Dashboard implements OnInit {
   private courseService = inject(CourseService);
+  private filtersService = inject(FiltersService);
 
   // Service signals
   courseData = this.courseService.courses;
@@ -49,7 +50,10 @@ export class Dashboard implements OnInit {
   currentFilters = signal<{ [key: string]: string[] }>({});
 
   ngOnInit() {
-    this.loadCourses();
+    // Load filters first, then courses
+    this.filtersService.loadFilters().subscribe(() => {
+      this.loadCourses();
+    });
   }
 
   loadCourses() {

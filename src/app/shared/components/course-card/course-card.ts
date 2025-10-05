@@ -34,35 +34,37 @@ import { RouterLink } from '@angular/router';
       <div class="course-content">
         <div class="course-main-info">
           <h3 class="course-title">{{ course().title }}</h3>
-          <p class="course-headline">{{ course().headline }}</p>
+          <p class="course-headline">{{ course().shortDescription }}</p>
 
           <div class="instructor-info">
-            <span class="instructor-name">{{ course().instructorName }}</span>
+            <span class="instructor-name"
+              >{{ course().instructor.firstName }} {{ course().instructor.lastName }}</span
+            >
           </div>
 
           <div class="rating-info">
             <div class="rating">
-              <span class="rating-value">{{ course().averageRating | number: '1.1-1' }}</span>
+              <span class="rating-value">{{ course().rating | number: '1.1-1' }}</span>
               <div class="stars">
-                @for (star of getStars(course().averageRating); track $index) {
+                @for (star of getStars(course().rating); track $index) {
                   <mat-icon class="star-icon">{{ star }}</mat-icon>
                 }
               </div>
-              <span class="rating-count">({{ course().ratingCount | number }})</span>
+              <span class="rating-count">({{ course().reviewCount | number }})</span>
             </div>
           </div>
 
           <div class="course-details">
-            <span class="duration">{{ course().totalHours | number: '1.1-1' }} total hours</span>
-            <span class="separator">·</span>
-            <span class="lectures">{{ course().lectureCount }} lectures</span>
+            <span class="duration">{{ course().duration }} hours</span>
             <span class="separator">·</span>
             <span class="level">{{ course().level }}</span>
+            <span class="separator">·</span>
+            <span class="language">{{ course().language }}</span>
           </div>
         </div>
 
         <div class="course-price-section">
-          @if (course().isFree) {
+          @if (course().price === 0) {
             <span class="price free">Free</span>
           } @else {
             <span class="price">₺{{ course().price | number: '1.2-2' }}</span>

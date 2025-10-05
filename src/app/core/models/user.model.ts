@@ -1,25 +1,36 @@
 export interface User {
   id: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  fullName: string;
-  avatar?: string;
-  createdAt: Date;
+  profileImageUrl: string | null;
+  dateOfBirth: string | null;
+  bio: string | null;
+  createdAt: string;
 }
 
 export interface LoginRequest {
   email: string;
+  password: string;
 }
 
 export interface RegisterRequest {
-  fullName: string;
   email: string;
+  password: string;
+  confirmPassword: string;
+  firstName: string;
+  lastName: string;
 }
 
 export interface AuthResponse {
-  token: string;
   user: User;
+  token: string;
+  refreshToken: string;
 }
 
-export interface MeResponse {
-  user: User;
+// The API returns the user data directly, not wrapped in a user property
+export type MeResponse = User;
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
 }

@@ -59,6 +59,17 @@ import { LoginRequest } from '../../../core/models/user.model';
                 <mat-icon matSuffix>email</mat-icon>
               </mat-form-field>
 
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Password</mat-label>
+                <input
+                  matInput
+                  type="password"
+                  formControlName="password"
+                  placeholder="Enter your password"
+                />
+                <mat-icon matSuffix>lock</mat-icon>
+              </mat-form-field>
+
               <button
                 mat-raised-button
                 color="primary"
@@ -120,35 +131,38 @@ export class Login {
   constructor(private fb: FormBuilder) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(8)]],
     });
   }
 
-  async onSubmit() {
+  onSubmit() {
     if (this.loginForm.valid) {
-      try {
-        const loginRequest: LoginRequest = {
-          email: this.loginForm.value.email,
-        };
+      const loginRequest: LoginRequest = {
+        email: this.loginForm.value.email,
+        password: this.loginForm.value.password,
+      };
 
-        await this.authService.login(loginRequest);
+      this.authService.login(loginRequest).subscribe({
+        next: (response) => {
+          this.snackBar.open('Login successful!', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
 
-        this.snackBar.open('Login successful!', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-
-        // Redirect to dashboard or return URL
-        const returnUrl = this.router.parseUrl(this.router.url).queryParams['returnUrl'] || '/';
-        this.router.navigate([returnUrl]);
-      } catch (error) {
-        this.snackBar.open('Login failed. Please try again.', 'Close', {
-          duration: 5000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
-        });
-        console.error('Login error:', error);
-      }
+          // Redirect to dashboard or return URL
+          const returnUrl = this.router.parseUrl(this.router.url).queryParams['returnUrl'] || '/';
+          this.router.navigate([returnUrl]);
+        },
+        error: (error) => {
+          this.snackBar.open('Login failed. Please try again.', 'Close', {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+          console.error('Login error:', error);
+        },
+      });
     }
   }
 }

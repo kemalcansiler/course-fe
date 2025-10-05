@@ -1,5 +1,4 @@
-import { Injectable, inject, Injector, runInInjectionContext } from '@angular/core';
-import { LOCATION_INITIALIZED } from '@angular/common';
+import { Injectable, Injector } from '@angular/core';
 import { AuthService } from './auth.service';
 
 @Injectable({ providedIn: 'root' })
@@ -11,57 +10,31 @@ export class AppInitializerService {
 
     if (token) {
       try {
-        // Try to get current user data if token exists
         await this.authService.getMe();
       } catch (error) {
         console.warn('Failed to get user data on app initialization:', error);
-        // Token might be invalid, clear auth data
         this.authService.logout();
       }
     }
   }
 }
 
-export function AppInitializerFactory(
-  authService: AuthService,
-  injector: Injector
-) {
-  return () =>
-    new Promise<any>((resolve, reject) => {
-      function initializeApp() {
-        const token = authService.getToken();
+export function AppInitializerFactory(authService: AuthService, injector: Injector) {
+  return () => {
+    return new Promise<any>((resolve) => {
+      const token = authService.getToken();
 
-        if (token) {
-          try {
-            // Try to get current user data if token exists
-            authService.getMe()
-              .then(() => resolve(true))
-              .catch(err => {
-                console.warn('Failed to get user data on app initialization:', err);
-                // Token might be invalid, clear auth data
-                authService.logout();
-                resolve(true); // Continue app initialization even if auth fails
-              });
-          } catch (error) {
-            console.warn('Auth initialization error:', error);
+      if (token) {
+        authService.getMe().subscribe({
+          next: () => resolve(true),
+          error: () => {
             authService.logout();
             resolve(true);
-          }
-        } else {
-          resolve(true);
-        }
+          },
+        });
+      } else {
+        resolve(true);
       }
-
-      const locationInitialized = injector.get(LOCATION_INITIALIZED, Promise.resolve(null));
-
-      locationInitialized.then(() => {
-        if (authService.isAuthenticated()) {
-          runInInjectionContext(injector, () => {
-            initializeApp();
-          });
-        } else {
-          initializeApp();
-        }
-      });
     });
+  };
 }

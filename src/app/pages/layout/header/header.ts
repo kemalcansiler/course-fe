@@ -35,14 +35,19 @@ import { UserMenu } from '../../../shared/components/user-menu/user-menu';
             <div class="mobile-user-section">
               <div class="mobile-user-info">
                 <img
-                  [src]="authService.currentUser()?.avatar || 'assets/default-avatar.png'"
-                  [alt]="authService.currentUser()?.fullName"
+                  [src]="authService.currentUser()?.profileImageUrl || 'default-avatar.svg'"
+                  [alt]="
+                    authService.currentUser()?.firstName + ' ' + authService.currentUser()?.lastName
+                  "
                   class="mobile-user-avatar"
                   width="40"
                   height="40"
                 />
                 <div class="mobile-user-details">
-                  <div class="mobile-user-name">{{ authService.currentUser()?.fullName }}</div>
+                  <div class="mobile-user-name">
+                    {{ authService.currentUser()?.firstName }}
+                    {{ authService.currentUser()?.lastName }}
+                  </div>
                   <div class="mobile-user-email">{{ authService.currentUser()?.email }}</div>
                 </div>
               </div>
@@ -84,9 +89,7 @@ import { UserMenu } from '../../../shared/components/user-menu/user-menu';
 
           <span class="desktop-spacer"></span>
 
-          @if (authService.isLoading()) {
-            <mat-spinner diameter="24"></mat-spinner>
-          } @else if (authService.isAuthenticated()) {
+          @if (authService.currentUser()) {
             <app-user-menu
               [user]="authService.currentUser()!"
               (logoutClick)="onLogout()"

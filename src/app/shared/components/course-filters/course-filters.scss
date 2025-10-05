@@ -55,7 +55,6 @@
 .filter-option {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 4px 0;
 }
 
@@ -66,12 +65,6 @@
     font-size: 14px;
     color: #1c1d1f;
   }
-}
-
-.option-count {
-  font-size: 12px;
-  color: #6a6f73;
-  margin-left: 8px;
 }
 
 // Mobile styles

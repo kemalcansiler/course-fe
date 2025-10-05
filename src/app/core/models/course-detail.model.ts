@@ -1,20 +1,11 @@
-import { Course } from './course.model';
+import { Course, Instructor } from './course.model';
 
-export interface CourseDetail extends Course {
-  description: string;
-  lastUpdated: string;
-  language: string;
-  subtitles: string[];
-  whatYouWillLearn: string[];
+export interface CourseDetail extends Omit<Course, 'duration'> {
   courseIncludes: CourseInclude[];
   curriculum: CourseSection[];
-  instructor: Instructor;
-  requirements: string[];
   targetAudience: string[];
   relatedTopics: string[];
   reviews: CourseReview[];
-  totalStudents: number;
-  level: string;
   duration: string;
   lectures?: number;
   sections: number;
@@ -40,23 +31,6 @@ export interface CourseLesson {
   duration: string;
   isPreview: boolean;
   type: 'video' | 'quiz' | 'article';
-}
-
-export interface Instructor {
-  id: string;
-  name: string;
-  title: string;
-  imageUrl: string;
-  rating: number;
-  totalStudents: number;
-  totalCourses: number;
-  description: string;
-  socialLinks: SocialLink[];
-}
-
-export interface SocialLink {
-  platform: string;
-  url: string;
 }
 
 export interface CourseReview {

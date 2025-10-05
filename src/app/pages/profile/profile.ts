@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,7 +10,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
-import { User } from '../../core/models/user.model';
+import { ProfileService } from '../../core/services/profile.service';
+import { ProfileDto } from '../../core/models/profile.model';
 
 @Component({
   selector: 'app-profile',
@@ -31,147 +32,163 @@ import { User } from '../../core/models/user.model';
       <!-- Background Gradient -->
       <div class="background-gradient"></div>
 
-      @if (authService.isLoading()) {
+      @if (profileService.isLoading()) {
         <div class="loading-container">
           <mat-spinner diameter="50"></mat-spinner>
           <p>Loading profile...</p>
         </div>
-      } @else if (user()) {
+      } @else if (profile()) {
         <div class="profile-content">
           <!-- Profile Header - Compact Design -->
           <mat-card class="profile-header-card">
             <div class="profile-header">
               <div class="avatar-section">
                 <img
-                  [src]="user()!.avatar || 'assets/default-avatar.png'"
-                  [alt]="user()!.fullName"
+                  [src]="profile()!.profileImageUrl || 'default-avatar.svg'"
+                  [alt]="profile()!.firstName + ' ' + profile()!.lastName"
                   class="profile-avatar"
                   width="80"
                   height="80"
                 />
               </div>
               <div class="profile-info">
-                <h1 class="profile-name">{{ user()!.fullName }}</h1>
-                <p class="profile-email">{{ user()!.email }}</p>
+                <h1 class="profile-name">{{ profile()!.firstName }} {{ profile()!.lastName }}</h1>
+                <p class="profile-email">{{ profile()!.email }}</p>
               </div>
             </div>
           </mat-card>
 
-          <!-- Two Column Layout -->
-          <div class="profile-grid">
-            <!-- Profile Form -->
-            <mat-card class="profile-form-card">
-              <mat-card-header>
-                <mat-card-title>Profile Information</mat-card-title>
-                <mat-card-subtitle>Update your personal information</mat-card-subtitle>
-              </mat-card-header>
+          <!-- Profile Form -->
+          <mat-card class="profile-form-card">
+            <mat-card-header>
+              <mat-card-title>Profile Information</mat-card-title>
+              <mat-card-subtitle>Update your personal information</mat-card-subtitle>
+            </mat-card-header>
 
-              <mat-card-content>
-                <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-                  <div class="form-row" style="margin-top: 24px;">
-                    <mat-form-field appearance="outline" class="full-width">
-                      <mat-label>Full Name</mat-label>
-                      <input
-                        matInput
-                        type="text"
-                        formControlName="fullName"
-                        placeholder="Enter your full name"
-                      />
-                      <mat-icon matSuffix>person</mat-icon>
-                    </mat-form-field>
+            <mat-card-content>
+              <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+                <div class="form-row-group" style="margin-top: 24px;">
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>First Name</mat-label>
+                    <input
+                      matInput
+                      type="text"
+                      formControlName="firstName"
+                      placeholder="Enter your first name"
+                    />
+                    <mat-icon matSuffix>person</mat-icon>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline" class="half-width">
+                    <mat-label>Last Name</mat-label>
+                    <input
+                      matInput
+                      type="text"
+                      formControlName="lastName"
+                      placeholder="Enter your last name"
+                    />
+                    <mat-icon matSuffix>person</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Bio</mat-label>
+                    <textarea
+                      matInput
+                      formControlName="bio"
+                      placeholder="Tell us about yourself"
+                      rows="3"
+                    ></textarea>
+                    <mat-icon matSuffix>description</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-row">
+                  <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Date of Birth</mat-label>
+                    <input
+                      matInput
+                      type="date"
+                      formControlName="dateOfBirth"
+                      placeholder="Enter your date of birth"
+                    />
+                    <mat-icon matSuffix>cake</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="form-actions">
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    type="submit"
+                    [disabled]="!profileForm.valid || isUpdating()"
+                  >
+                    @if (isUpdating()) {
+                      <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
+                    }
+                    Update Profile
+                  </button>
+
+                  <button mat-button type="button" (click)="resetForm()" [disabled]="isUpdating()">
+                    Reset
+                  </button>
+                </div>
+              </form>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Learning Progress -->
+          <mat-card class="stats-card">
+            <mat-card-header>
+              <mat-card-title>Learning Progress</mat-card-title>
+              <mat-card-subtitle>Your learning journey</mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content>
+              <div class="stats-grid" style="margin-top: 16px;">
+                <div class="stat-item">
+                  <div class="stat-icon-wrapper">
+                    <mat-icon class="stat-icon">school</mat-icon>
                   </div>
-
-                  <div class="form-row">
-                    <mat-form-field appearance="outline" class="full-width">
-                      <mat-label>Email</mat-label>
-                      <input
-                        matInput
-                        type="email"
-                        formControlName="email"
-                        placeholder="Enter your email address"
-                      />
-                      <mat-icon matSuffix>email</mat-icon>
-                    </mat-form-field>
-                  </div>
-
-                  <div class="form-actions">
-                    <button
-                      mat-raised-button
-                      color="primary"
-                      type="submit"
-                      [disabled]="!profileForm.valid || isUpdating()"
-                    >
-                      @if (isUpdating()) {
-                        <mat-spinner diameter="20" style="margin-right: 8px;"></mat-spinner>
-                      }
-                      Update Profile
-                    </button>
-
-                    <button
-                      mat-button
-                      type="button"
-                      (click)="resetForm()"
-                      [disabled]="isUpdating()"
-                    >
-                      Reset
-                    </button>
-                  </div>
-                </form>
-              </mat-card-content>
-            </mat-card>
-
-            <!-- Account Statistics -->
-            <mat-card class="stats-card">
-              <mat-card-header>
-                <mat-card-title>Learning Progress</mat-card-title>
-                <mat-card-subtitle>Your learning journey</mat-card-subtitle>
-              </mat-card-header>
-
-              <mat-card-content>
-                <div class="stats-grid" style="margin-top: 16px;">
-                  <div class="stat-item">
-                    <div class="stat-icon-wrapper">
-                      <mat-icon class="stat-icon">school</mat-icon>
-                    </div>
-                    <div class="stat-content">
-                      <div class="stat-value">0</div>
-                      <div class="stat-label">Courses Enrolled</div>
-                    </div>
-                  </div>
-
-                  <div class="stat-item">
-                    <div class="stat-icon-wrapper">
-                      <mat-icon class="stat-icon">schedule</mat-icon>
-                    </div>
-                    <div class="stat-content">
-                      <div class="stat-value">0h</div>
-                      <div class="stat-label">Learning Time</div>
-                    </div>
-                  </div>
-
-                  <div class="stat-item">
-                    <div class="stat-icon-wrapper">
-                      <mat-icon class="stat-icon">workspace_premium</mat-icon>
-                    </div>
-                    <div class="stat-content">
-                      <div class="stat-value">0</div>
-                      <div class="stat-label">Certificates</div>
-                    </div>
-                  </div>
-
-                  <div class="stat-item">
-                    <div class="stat-icon-wrapper">
-                      <mat-icon class="stat-icon">star</mat-icon>
-                    </div>
-                    <div class="stat-content">
-                      <div class="stat-value">0</div>
-                      <div class="stat-label">Achievements</div>
-                    </div>
+                  <div class="stat-content">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Courses Enrolled</div>
                   </div>
                 </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
+
+                <div class="stat-item">
+                  <div class="stat-icon-wrapper">
+                    <mat-icon class="stat-icon">schedule</mat-icon>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-value">0h</div>
+                    <div class="stat-label">Learning Time</div>
+                  </div>
+                </div>
+
+                <div class="stat-item">
+                  <div class="stat-icon-wrapper">
+                    <mat-icon class="stat-icon">workspace_premium</mat-icon>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Certificates</div>
+                  </div>
+                </div>
+
+                <div class="stat-item">
+                  <div class="stat-icon-wrapper">
+                    <mat-icon class="stat-icon">star</mat-icon>
+                  </div>
+                  <div class="stat-content">
+                    <div class="stat-value">0</div>
+                    <div class="stat-label">Achievements</div>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
         </div>
       } @else {
         <div class="error-container">
@@ -295,23 +312,27 @@ import { User } from '../../core/models/user.model';
         font-size: 0.8rem;
       }
 
-      .profile-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-      }
-
       .profile-form-card,
       .stats-card {
-        margin-bottom: 0;
+        margin-bottom: 16px;
       }
 
       .form-row {
         margin-bottom: 12px;
       }
 
+      .form-row-group {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
       .full-width {
         width: 100%;
+      }
+
+      .half-width {
+        flex: 1;
       }
 
       .form-actions {
@@ -405,8 +426,8 @@ import { User } from '../../core/models/user.model';
           padding: 16px;
         }
 
-        .profile-grid {
-          grid-template-columns: 1fr;
+        .form-row-group {
+          flex-direction: column;
           gap: 12px;
         }
 
@@ -437,79 +458,114 @@ import { User } from '../../core/models/user.model';
     `,
   ],
 })
-export class Profile {
-  user = signal<User | null>(null);
+export class Profile implements OnInit {
+  profile = signal<ProfileDto | null>(null);
   isUpdating = signal<boolean>(false);
   profileForm: FormGroup;
 
   authService = inject(AuthService);
+  profileService = inject(ProfileService);
   snackBar = inject(MatSnackBar);
 
   constructor(private fb: FormBuilder) {
     this.profileForm = this.fb.group({
-      fullName: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
+      firstName: ['', [Validators.required, Validators.minLength(2)]],
+      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      bio: [''],
+      dateOfBirth: [''],
     });
-
-    // Initialize form with current user data
-    this.initializeForm();
   }
 
-  private initializeForm() {
-    const currentUser = this.authService.currentUser();
-    if (currentUser) {
-      this.user.set(currentUser);
-      this.profileForm.patchValue({
-        fullName: currentUser.fullName,
-        email: currentUser.email,
-      });
-    }
+  ngOnInit() {
+    this.loadProfile();
   }
 
-  async onSubmit() {
-    if (this.profileForm.valid && this.user()) {
-      this.isUpdating.set(true);
-
-      try {
-        // Simulate API call delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-
-        // Update user data (in real app, this would be an API call)
-        const updatedUser: User = {
-          ...this.user()!,
-          fullName: this.profileForm.value.fullName,
-          email: this.profileForm.value.email,
-        };
-
-        // Update in sessionStorage
-        sessionStorage.setItem('user_data', JSON.stringify(updatedUser));
-
-        // Update the signal
-        this.user.set(updatedUser);
-
-        this.snackBar.open('Profile updated successfully!', 'Close', {
-          duration: 3000,
-          horizontalPosition: 'center',
-          verticalPosition: 'top',
+  private loadProfile() {
+    this.profileService.getProfile().subscribe({
+      next: (profile) => {
+        this.profile.set(profile);
+        this.profileForm.patchValue({
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          bio: profile.bio || '',
+          dateOfBirth: profile.dateOfBirth ? this.formatDateForInput(profile.dateOfBirth) : '',
         });
-      } catch (error) {
-        this.snackBar.open('Failed to update profile. Please try again.', 'Close', {
+      },
+      error: (error) => {
+        this.snackBar.open('Failed to load profile. Please try again.', 'Close', {
           duration: 5000,
           horizontalPosition: 'center',
           verticalPosition: 'top',
         });
-        console.error('Profile update error:', error);
-      } finally {
-        this.isUpdating.set(false);
-      }
+      },
+    });
+  }
+
+  private formatDateForInput(dateString: string): string {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toISOString().split('T')[0];
+  }
+
+  onSubmit() {
+    if (this.profileForm.valid && this.profile()) {
+      this.isUpdating.set(true);
+
+      const formValue = this.profileForm.value;
+      const updateRequest = {
+        firstName: formValue.firstName,
+        lastName: formValue.lastName,
+        bio: formValue.bio || null,
+        dateOfBirth: formValue.dateOfBirth ? new Date(formValue.dateOfBirth).toISOString() : null,
+      };
+
+      this.profileService.updateProfile(updateRequest).subscribe({
+        next: (updatedProfile) => {
+          this.profile.set(updatedProfile);
+          this.isUpdating.set(false);
+
+          // Update auth service current user to reflect changes in header
+          const currentUser = this.authService.currentUser();
+          if (currentUser) {
+            const updatedUser = {
+              ...currentUser,
+              firstName: updatedProfile.firstName,
+              lastName: updatedProfile.lastName,
+              bio: updatedProfile.bio,
+              dateOfBirth: updatedProfile.dateOfBirth,
+              profileImageUrl: updatedProfile.profileImageUrl,
+            };
+            this.authService.updateCurrentUser(updatedUser);
+          }
+
+          this.snackBar.open('Profile updated successfully!', 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        },
+        error: (error) => {
+          this.isUpdating.set(false);
+          this.snackBar.open('Failed to update profile. Please try again.', 'Close', {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'top',
+          });
+        },
+      });
     }
   }
 
   resetForm() {
-    if (this.user()) {
+    const currentProfile = this.profile();
+    if (currentProfile) {
       this.profileForm.patchValue({
-        fullName: this.user()!.fullName,
-        email: this.user()!.email,
+        firstName: currentProfile.firstName,
+        lastName: currentProfile.lastName,
+        bio: currentProfile.bio || '',
+        dateOfBirth: currentProfile.dateOfBirth
+          ? this.formatDateForInput(currentProfile.dateOfBirth)
+          : '',
       });
     }
   }

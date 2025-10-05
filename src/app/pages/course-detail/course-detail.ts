@@ -1,6 +1,6 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, DatePipe } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
@@ -28,6 +28,7 @@ import { CourseDetailSkeleton } from '../../shared/components/course-detail-skel
     MatInputModule,
     CourseDetailSkeleton,
     DecimalPipe,
+    DatePipe,
   ],
   templateUrl: './course-detail.html',
   styleUrls: ['./course-detail.scss'],

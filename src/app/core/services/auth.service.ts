@@ -1,4 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import {
   User,
   LoginRequest,
@@ -6,176 +8,133 @@ import {
   AuthResponse,
   MeResponse,
 } from '../models/user.model';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
   private readonly TOKEN_KEY = 'auth_token';
-  private readonly USER_KEY = 'user_data';
 
   // Signals for reactive state management
   private _isAuthenticated = signal<boolean>(false);
   private _currentUser = signal<User | null>(null);
   private _isLoading = signal<boolean>(false);
+  private _error = signal<string | null>(null);
 
   // Public computed signals
   isAuthenticated = computed(() => this._isAuthenticated());
   currentUser = computed(() => this._currentUser());
   isLoading = computed(() => this._isLoading());
+  error = computed(() => this._error());
 
-  constructor() {
-    this.initializeAuth();
+  constructor(private apiService: ApiService) {}
+
+  /**
+   * Login method - calls real API
+   */
+  login(credentials: LoginRequest): Observable<AuthResponse> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.apiService.post<AuthResponse>('auth/login', credentials).pipe(
+      tap((response) => {
+        // Store tokens in sessionStorage
+        sessionStorage.setItem(this.TOKEN_KEY, response.token);
+        if (response.refreshToken) {
+          sessionStorage.setItem('refresh_token', response.refreshToken);
+        }
+
+        // Update signals
+        this._currentUser.set(response.user);
+        this._isAuthenticated.set(true);
+        this._isLoading.set(false);
+      }),
+      catchError((error) => {
+        this._isLoading.set(false);
+        this._error.set(error.message);
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
-   * Initialize authentication state from sessionStorage
+   * Register method - calls real API
    */
-  private initializeAuth(): void {
-    const token = sessionStorage.getItem(this.TOKEN_KEY);
-    const userData = sessionStorage.getItem(this.USER_KEY);
+  register(userData: RegisterRequest): Observable<AuthResponse> {
+    this._isLoading.set(true);
+    this._error.set(null);
 
-    if (token && userData) {
-      try {
-        const user = JSON.parse(userData);
+    return this.apiService.post<AuthResponse>('auth/register', userData).pipe(
+      tap((response) => {
+        // Store tokens in sessionStorage
+        sessionStorage.setItem(this.TOKEN_KEY, response.token);
+        if (response.refreshToken) {
+          sessionStorage.setItem('refresh_token', response.refreshToken);
+        }
+
+        // Update signals
+        this._currentUser.set(response.user);
+        this._isAuthenticated.set(true);
+        this._isLoading.set(false);
+      }),
+      catchError((error) => {
+        this._isLoading.set(false);
+        this._error.set(error.message);
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  /**
+   * Get current user data from API
+   */
+  getMe(): Observable<MeResponse> {
+    this._isLoading.set(true);
+    this._error.set(null);
+
+    return this.apiService.get<MeResponse>('auth/me').pipe(
+      tap((user) => {
+        // Update signals - response is the user object directly
         this._currentUser.set(user);
         this._isAuthenticated.set(true);
-      } catch (error) {
-        console.error('Error parsing user data from sessionStorage:', error);
+        this._isLoading.set(false);
+      }),
+      catchError((error) => {
+        this._isLoading.set(false);
+        this._error.set(error.message);
         this.clearAuthData();
-      }
-    }
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
-   * Mock login method - simulates API call
+   * Refresh authentication token
    */
-  async login(credentials: LoginRequest): Promise<AuthResponse> {
-    this._isLoading.set(true);
-
-    try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock validation - in real app, this would be an API call
-      if (!credentials.email || !credentials.email.includes('@')) {
-        throw new Error('Invalid email address');
-      }
-
-      // Mock user data
-      const mockUser: User = {
-        id: this.generateId(),
-        email: credentials.email,
-        fullName: this.extractNameFromEmail(credentials.email),
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(this.extractNameFromEmail(credentials.email))}&background=random`,
-        createdAt: new Date(),
-      };
-
-      const mockToken = this.generateMockToken();
-      const response: AuthResponse = {
-        token: mockToken,
-        user: mockUser,
-      };
-
-      // Store in sessionStorage
-      sessionStorage.setItem(this.TOKEN_KEY, mockToken);
-      sessionStorage.setItem(this.USER_KEY, JSON.stringify(mockUser));
-
-      // Update signals
-      this._currentUser.set(mockUser);
-      this._isAuthenticated.set(true);
-
-      return response;
-    } catch (error) {
-      throw error;
-    } finally {
-      this._isLoading.set(false);
+  refreshToken(): Observable<AuthResponse> {
+    const refreshToken = sessionStorage.getItem('refresh_token');
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
     }
-  }
 
-  /**
-   * Mock register method - simulates API call
-   */
-  async register(userData: RegisterRequest): Promise<AuthResponse> {
-    this._isLoading.set(true);
+    return this.apiService.post<AuthResponse>('auth/refresh', { refreshToken }).pipe(
+      tap((response) => {
+        // Update stored tokens
+        sessionStorage.setItem(this.TOKEN_KEY, response.token);
+        if (response.refreshToken) {
+          sessionStorage.setItem('refresh_token', response.refreshToken);
+        }
 
-    try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Mock validation
-      if (!userData.email || !userData.email.includes('@')) {
-        throw new Error('Invalid email address');
-      }
-
-      if (!userData.fullName || userData.fullName.length < 2) {
-        throw new Error('Full name must be at least 2 characters');
-      }
-
-      // Mock user data
-      const mockUser: User = {
-        id: this.generateId(),
-        email: userData.email,
-        fullName: userData.fullName,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(userData.fullName)}&background=random`,
-        createdAt: new Date(),
-      };
-
-      const mockToken = this.generateMockToken();
-      const response: AuthResponse = {
-        token: mockToken,
-        user: mockUser,
-      };
-
-      // Store in sessionStorage
-      sessionStorage.setItem(this.TOKEN_KEY, mockToken);
-      sessionStorage.setItem(this.USER_KEY, JSON.stringify(mockUser));
-
-      // Update signals
-      this._currentUser.set(mockUser);
-      this._isAuthenticated.set(true);
-
-      return response;
-    } catch (error) {
-      throw error;
-    } finally {
-      this._isLoading.set(false);
-    }
-  }
-
-  /**
-   * Mock me method - simulates getting current user data
-   */
-  async getMe(): Promise<MeResponse> {
-    this._isLoading.set(true);
-
-    try {
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const token = sessionStorage.getItem(this.TOKEN_KEY);
-      if (!token) {
-        throw new Error('No authentication token found');
-      }
-
-      const userData = sessionStorage.getItem(this.USER_KEY);
-      if (!userData) {
-        throw new Error('No user data found');
-      }
-
-      const user = JSON.parse(userData);
-
-      // Update signals
-      this._currentUser.set(user);
-      this._isAuthenticated.set(true);
-
-      return { user };
-    } catch (error) {
-      this.clearAuthData();
-      throw error;
-    } finally {
-      this._isLoading.set(false);
-    }
+        // Update signals
+        this._currentUser.set(response.user);
+        this._isAuthenticated.set(true);
+      }),
+      catchError((error) => {
+        this.clearAuthData();
+        return throwError(() => error);
+      }),
+    );
   }
 
   /**
@@ -190,9 +149,17 @@ export class AuthService {
    */
   private clearAuthData(): void {
     sessionStorage.removeItem(this.TOKEN_KEY);
-    sessionStorage.removeItem(this.USER_KEY);
+    sessionStorage.removeItem('refresh_token');
     this._currentUser.set(null);
     this._isAuthenticated.set(false);
+    this._error.set(null);
+  }
+
+  /**
+   * Clear error state
+   */
+  clearError(): void {
+    this._error.set(null);
   }
 
   /**
@@ -209,17 +176,10 @@ export class AuthService {
     return this._isAuthenticated();
   }
 
-  // Helper methods for mock data generation
-  private generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
-  }
-
-  private generateMockToken(): string {
-    return 'mock_token_' + Math.random().toString(36).substr(2, 9);
-  }
-
-  private extractNameFromEmail(email: string): string {
-    const name = email.split('@')[0];
-    return name.charAt(0).toUpperCase() + name.slice(1);
+  /**
+   * Update current user data
+   */
+  updateCurrentUser(user: User): void {
+    this._currentUser.set(user);
   }
 }

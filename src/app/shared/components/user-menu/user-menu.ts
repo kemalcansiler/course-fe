@@ -11,16 +11,17 @@ import { User } from '../../../core/models/user.model';
   selector: 'app-user-menu',
   imports: [MatButtonModule, MatIconModule, MatMenuModule, MatDividerModule, MatChipsModule],
   template: `
+    @let currentUser = user()!;
     <button mat-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
       <div class="user-info">
         <img
-          [src]="user().avatar || 'assets/default-avatar.png'"
-          [alt]="user().fullName"
+          [src]="currentUser.profileImageUrl || 'default-avatar.svg'"
+          [alt]="currentUser.firstName + ' ' + currentUser.lastName"
           class="user-avatar"
           width="32"
           height="32"
         />
-        <span class="user-name">{{ user().fullName }}</span>
+        <span class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</span>
         <mat-icon>arrow_drop_down</mat-icon>
       </div>
     </button>
@@ -29,15 +30,15 @@ import { User } from '../../../core/models/user.model';
       <div class="menu-header">
         <div class="user-details">
           <img
-            [src]="user().avatar || 'assets/default-avatar.png'"
-            [alt]="user().fullName"
+            [src]="currentUser.profileImageUrl || 'default-avatar.svg'"
+            [alt]="currentUser.firstName + ' ' + currentUser.lastName"
             class="menu-avatar"
             width="40"
             height="40"
           />
           <div class="user-info user-info-direction">
-            <div class="user-name">{{ user().fullName }}</div>
-            <div class="user-email">{{ user().email }}</div>
+            <div class="user-name">{{ currentUser.firstName }} {{ currentUser.lastName }}</div>
+            <div class="user-email">{{ currentUser.email }}</div>
           </div>
         </div>
       </div>

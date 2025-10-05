@@ -26,7 +26,7 @@
         @if (loading()) {
           <div class="skeleton-text"></div>
         } @else {
-          {{ courseData().totalResults | number }} results
+          {{ courseData().totalCount || 0 | number }} results
         }
       </div>
     </div>
@@ -36,7 +36,7 @@
       <!-- Filters Sidebar -->
       <div class="filters-sidebar">
         <app-course-filters
-          [filters]="courseData().filters"
+          [filters]="courseData().filters || []"
           (filterChange)="onFilterChange($event)"
         />
       </div>
@@ -47,7 +47,7 @@
           @for (item of [1, 2, 3, 4, 5, 6]; track item) {
             <app-course-skeleton />
           }
-        } @else if (courseData().courses.length === 0) {
+        } @else if (courseData().data.length === 0) {
           <app-no-data-found
             title="No Courses Found"
             message="We couldn't find any courses matching your criteria. Try adjusting your filters or search terms."
@@ -56,7 +56,7 @@
             [actionClick]="clearFilters"
           />
         } @else {
-          @for (course of courseData().courses; track course.id; let last = $last) {
+          @for (course of courseData().data || []; track course.id; let last = $last) {
             <app-course-card [course]="course" />
             @if (!last) {
               <mat-divider />
@@ -71,7 +71,7 @@
       <!-- Mobile Filters -->
       <div class="mobile-filters-section">
         <app-course-filters
-          [filters]="courseData().filters"
+          [filters]="courseData().filters || []"
           (filterChange)="onFilterChange($event)"
         />
       </div>
@@ -82,7 +82,7 @@
           @for (item of [1, 2, 3, 4, 5, 6]; track item) {
             <app-course-skeleton />
           }
-        } @else if (courseData().courses.length === 0) {
+        } @else if (courseData().data.length === 0) {
           <app-no-data-found
             title="No Courses Found"
             message="We couldn't find any courses matching your criteria. Try adjusting your filters or search terms."
@@ -91,7 +91,7 @@
             [actionClick]="clearFilters"
           />
         } @else {
-          @for (course of courseData().courses; track course.id; let last = $last) {
+          @for (course of courseData().data || []; track course.id; let last = $last) {
             <app-course-card [course]="course" />
             @if (!last) {
               <mat-divider />
@@ -102,9 +102,14 @@
     </div>
 
     <!-- Pagination -->
-    @if (!loading() && courseData().courses.length > 0) {
+    @if (!loading() && courseData().data.length > 0) {
       <app-course-pagination
-        [pagination]="courseData().pagination"
+        [pagination]="{
+          currentPage: courseData().page,
+          pageCount: courseData().totalPages,
+          pageSize: courseData().pageSize,
+          totalResults: courseData().totalCount,
+        }"
         (pageChange)="onPageChange($event)"
       />
     }

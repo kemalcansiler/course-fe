@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { provideHttpClient } from '@angular/common/http';
 import { inject, Injector } from '@angular/core';
 
 import { routes } from './app.routes';
@@ -18,11 +19,9 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
+    provideHttpClient(),
     provideAppInitializer(() => {
-      const initializerFn = AppInitializerFactory(
-        inject(AuthService),
-        inject(Injector)
-      );
+      const initializerFn = AppInitializerFactory(inject(AuthService), inject(Injector));
       return initializerFn();
     }),
   ],

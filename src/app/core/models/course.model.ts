@@ -1,24 +1,51 @@
 export interface Course {
-  id: string;
+  id: number;
   title: string;
-  headline: string;
+  description: string;
+  shortDescription: string;
   imageUrl: string;
-  instructorName: string;
-  averageRating: number;
-  ratingCount: number;
-  totalHours: number;
-  lectureCount: number;
-  level: string;
+  videoUrl: string;
   price: number;
-  badges: string[];
-  isFree: boolean;
+  discountPrice: number;
+  duration: number;
+  level: string;
+  language: string;
+  isFeatured: boolean;
+  rating: number;
+  reviewCount: number;
+  enrollmentCount: number;
+  createdAt: string;
+  category: Category;
+  instructor: Instructor;
+}
+
+export interface Instructor {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  profileImageUrl: string;
+  dateOfBirth: string;
+  bio: string;
+  createdAt: string;
+}
+
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  imageUrl: string;
 }
 
 export interface CourseSearchResponse {
-  totalResults: number;
-  courses: Course[];
+  data: Course[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
   filters: FilterOption[];
-  pagination: PaginationMeta;
 }
 
 export interface FilterOption {
@@ -30,7 +57,6 @@ export interface FilterOption {
 export interface FilterBucket {
   label: string;
   value: string;
-  count: number;
   isSelected: boolean;
 }
 
@@ -39,4 +65,15 @@ export interface PaginationMeta {
   pageCount: number;
   pageSize: number;
   totalResults: number;
+}
+
+// API Response interfaces
+export interface ApiCourseResponse {
+  data: Course[];
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 }

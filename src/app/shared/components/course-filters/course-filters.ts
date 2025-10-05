@@ -45,7 +45,6 @@ import { FilterOption } from '../../../core/models/course.model';
                   >
                     {{ option.label }}
                   </mat-checkbox>
-                  <span class="option-count">({{ option.count }})</span>
                 </div>
               }
             </div>
@@ -71,7 +70,6 @@ import { FilterOption } from '../../../core/models/course.model';
                   >
                     {{ option.label }}
                   </mat-checkbox>
-                  <span class="option-count">({{ option.count }})</span>
                 </div>
               }
             </div>
