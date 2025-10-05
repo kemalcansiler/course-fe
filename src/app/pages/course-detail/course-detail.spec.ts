@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ActivatedRoute } from '@angular/router';
+import { of } from 'rxjs';
 
 import { CourseDetail } from './course-detail';
 
@@ -8,7 +11,16 @@ describe('CourseDetail', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CourseDetail],
+      imports: [CourseDetail, HttpClientTestingModule],
+      providers: [
+        { 
+          provide: ActivatedRoute, 
+          useValue: { 
+            params: of({ id: '1' }),
+            snapshot: { params: { id: '1' } }
+          } 
+        }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CourseDetail);

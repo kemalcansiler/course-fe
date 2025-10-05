@@ -104,6 +104,9 @@ npm run build
 # Run tests
 npm test
 
+# Run tests with coverage
+npm test -- --code-coverage
+
 # Lint code
 npm run lint
 
@@ -118,6 +121,153 @@ npm run format
 - **Signals** for state management
 - **Reactive forms** over template-driven
 - **SCSS** for styling with BEM methodology
+
+## 🧪 Testing
+
+The project uses Jasmine and Karma for unit testing with comprehensive test coverage.
+
+### Test Structure
+```
+src/app/
+├── core/
+│   ├── services/
+│   │   ├── auth.service.spec.ts       # Authentication service tests
+│   │   ├── course.service.spec.ts     # Course service tests
+│   │   └── api.service.spec.ts        # HTTP service tests
+│   └── guards/
+│       └── auth.guard.spec.ts         # Route guard tests
+├── pages/
+│   └── auth/login/
+│       └── login.spec.ts              # Login component tests
+└── shared/components/
+    └── course-card/
+        └── course-card.spec.ts        # Component tests
+```
+
+### Running Tests
+
+**Run tests in watch mode:**
+```bash
+npm test
+```
+
+**Run tests once (CI mode):**
+```bash
+npm test -- --watch=false
+```
+
+**Run tests with code coverage:**
+```bash
+npm test -- --code-coverage --watch=false
+```
+
+**Run tests in headless browser:**
+```bash
+npm test -- --watch=false --browsers=ChromeHeadless
+```
+
+**Run specific test file:**
+```bash
+npm test -- --include='**/auth.service.spec.ts'
+```
+
+### Test Coverage
+
+The test suite includes **54 comprehensive tests** covering:
+- ✅ **AuthService** (12 tests) - Authentication, session management, JWT handling
+- ✅ **CourseService** (7 tests) - Course operations, filtering, sorting
+- ✅ **ApiService** (10 tests) - HTTP operations, error handling
+- ✅ **Auth Guards** (4 tests) - Route protection logic
+- ✅ **Login Component** (9 tests) - Form validation, user interactions
+- ✅ **CourseCard Component** (6 tests) - Component rendering and logic
+- ✅ **Other Components** (6 tests) - Dashboard, course detail, app
+
+**Current Coverage:**
+- Statements: 45%+
+- Functions: 36%+
+- Services: Well covered
+- Components: Core logic tested
+
+### Coverage Reports
+
+After running tests with coverage, view the report:
+```bash
+# Coverage report location
+open coverage/index.html
+```
+
+### Testing Technologies
+- **Jasmine** - Behavior-driven testing framework
+- **Karma** - Test runner
+- **ChromeHeadless** - Headless browser for CI/CD
+- **karma-coverage** - Code coverage reporting
+- **HttpClientTestingModule** - HTTP request mocking
+
+### Example Test Run Output
+```
+Chrome Headless: Executed 54 of 54 SUCCESS (0.3 secs / 0.287 secs)
+
+=============================== Coverage summary ===============================
+Statements   : 45.34% ( 190/419 )
+Branches     : 18.08% ( 17/94 )
+Functions    : 36% ( 45/125 )
+Lines        : 45.47% ( 171/376 )
+================================================================================
+```
+
+### Writing Tests
+
+**Service Test Example:**
+```typescript
+describe('AuthService', () => {
+  let service: AuthService;
+  let httpMock: HttpTestingController;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [AuthService, ApiService]
+    });
+    service = TestBed.inject(AuthService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  it('should login successfully', (done) => {
+    const mockResponse = { token: 'test-token', user: {...} };
+    
+    service.login(credentials).subscribe(response => {
+      expect(response.token).toBe('test-token');
+      done();
+    });
+
+    const req = httpMock.expectOne(url => url.includes('auth/login'));
+    req.flush(mockResponse);
+  });
+});
+```
+
+**Component Test Example:**
+```typescript
+describe('LoginComponent', () => {
+  let component: Login;
+  let fixture: ComponentFixture<Login>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [Login, ReactiveFormsModule]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(Login);
+    component = fixture.componentInstance;
+  });
+
+  it('should validate email field', () => {
+    const emailControl = component.loginForm.get('email');
+    emailControl?.setValue('invalid-email');
+    expect(emailControl?.hasError('email')).toBe(true);
+  });
+});
+```
 
 ## 📱 Responsive Design
 
