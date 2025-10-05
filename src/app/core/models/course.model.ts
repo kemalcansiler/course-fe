@@ -4,9 +4,9 @@ export interface Course {
   description: string;
   shortDescription: string;
   imageUrl: string;
-  videoUrl: string;
+  videoUrl: string | null;
   price: number;
-  discountPrice: number;
+  discountPrice: number | null;
   duration: number;
   level: string;
   language: string;
@@ -16,7 +16,7 @@ export interface Course {
   enrollmentCount: number;
   createdAt: string;
   category: Category;
-  instructor: Instructor;
+  instructor: Instructor | null;
 }
 
 export interface Instructor {

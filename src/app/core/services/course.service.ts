@@ -24,6 +24,10 @@ export class CourseService {
 
   private loading = signal(false);
   private error = signal<string | null>(null);
+  
+  // Store current filters and sort
+  private currentFilters = signal<{ [key: string]: string[] }>({});
+  private currentSortBy = signal<string>('most-popular');
 
   // Public signals
   courses = computed(() => this.coursesData());
@@ -79,6 +83,10 @@ export class CourseService {
   ): Observable<CourseSearchResponse> {
     this.loading.set(true);
     this.error.set(null);
+    
+    // Store current state
+    this.currentFilters.set(filters);
+    this.currentSortBy.set(sortBy);
 
     // Build query parameters
     let params = new URLSearchParams();
@@ -127,9 +135,9 @@ export class CourseService {
   updateFilters(filters: { [key: string]: string[] }): Observable<CourseSearchResponse> {
     const currentData = this.coursesData();
     return this.loadCourses(
-      currentData.page,
+      0, // Reset to first page when filters change
       currentData.pageSize,
-      'most-popular', // Keep current sort
+      this.currentSortBy(), // Keep current sort
       filters,
     );
   }
@@ -137,16 +145,21 @@ export class CourseService {
   // Update sorting
   updateSorting(sortBy: string): Observable<CourseSearchResponse> {
     const currentData = this.coursesData();
-    return this.loadCourses(currentData.page, currentData.pageSize, sortBy);
+    return this.loadCourses(
+      0, // Reset to first page when sort changes
+      currentData.pageSize,
+      sortBy,
+      this.currentFilters(), // Keep current filters
+    );
   }
 
   // Update pagination
   updatePagination(page: number, pageSize: number): Observable<CourseSearchResponse> {
-    const currentData = this.coursesData();
     return this.loadCourses(
       page,
       pageSize,
-      'most-popular', // Keep current sort
+      this.currentSortBy(), // Keep current sort
+      this.currentFilters(), // Keep current filters
     );
   }
 

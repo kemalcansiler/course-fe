@@ -74,16 +74,25 @@ export class Dashboard implements OnInit {
     }
 
     this.currentFilters.set(currentFilters);
-    this.courseService.updateFilters(currentFilters).subscribe();
+    this.courseService.updateFilters(currentFilters).subscribe(() => {
+      // Scroll to top when filters change
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   onPageChange(event: PageEvent) {
-    this.courseService.updatePagination(event.pageIndex, event.pageSize).subscribe();
+    this.courseService.updatePagination(event.pageIndex, event.pageSize).subscribe(() => {
+      // Scroll to top when page changes
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   onSortChange(sortValue: string) {
     this.sortBy.set(sortValue);
-    this.courseService.updateSorting(sortValue).subscribe();
+    this.courseService.updateSorting(sortValue).subscribe(() => {
+      // Scroll to top when sort changes
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
   }
 
   clearFilters = () => {

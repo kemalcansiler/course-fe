@@ -37,9 +37,13 @@ import { RouterLink } from '@angular/router';
           <p class="course-headline">{{ course().shortDescription }}</p>
 
           <div class="instructor-info">
-            <span class="instructor-name"
-              >{{ course().instructor.firstName }} {{ course().instructor.lastName }}</span
-            >
+            <span class="instructor-name">
+              @if (course().instructor; as instructor) {
+                {{ instructor.firstName }} {{ instructor.lastName }}
+              } @else {
+                Platform Instructor
+              }
+            </span>
           </div>
 
           <div class="rating-info">
@@ -55,9 +59,9 @@ import { RouterLink } from '@angular/router';
           </div>
 
           <div class="course-details">
-            <span class="duration">{{ course().duration }} hours</span>
+            <span class="duration">{{ getDurationText(course().duration) }}</span>
             <span class="separator">·</span>
-            <span class="level">{{ course().level }}</span>
+            <span class="level">{{ getLevelText(course().level) }}</span>
             <span class="separator">·</span>
             <span class="language">{{ course().language }}</span>
           </div>
@@ -97,5 +101,28 @@ export class CourseCard {
     }
 
     return stars;
+  }
+
+  getDurationText(minutes: number): string {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    
+    if (hours === 0) {
+      return `${minutes} min`;
+    } else if (remainingMinutes === 0) {
+      return `${hours} hours`;
+    } else {
+      return `${hours}h ${remainingMinutes}min`;
+    }
+  }
+
+  getLevelText(level: string): string {
+    const levelMap: Record<string, string> = {
+      'BEGINNER': 'Beginner',
+      'INTERMEDIATE': 'Intermediate',
+      'ADVANCED': 'Advanced',
+      'ALL_LEVELS': 'All Levels'
+    };
+    return levelMap[level] || level;
   }
 }
